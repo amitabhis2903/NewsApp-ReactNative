@@ -39,12 +39,14 @@ componentDidMount() {
   render() {
 
     if (this.state.isLoading) {
-      <SafeAreaView>
-        <View>
-          <ActivityIndicator size = 'large' color = 'red'>
+      return (
+      <SafeAreaView style = {{flex: 1}}>
+        <View style = {{flex: 1, justifyContent: 'center', alignItems: 'center',backgroundColor: 'white'}}> 
+          <ActivityIndicator size = 'large' color = 'black'>
           </ActivityIndicator>
         </View>
       </SafeAreaView>
+      )
     }
 
 
