@@ -1,6 +1,12 @@
 import React from 'react';
-import { StyleSheet, Text, View, FlatList, Image, ActivityIndicator, SafeAreaView } from 'react-native';
-import {Card, CardItem, Container, Body} from 'native-base'
+import { StyleSheet, 
+         Text, 
+         View, 
+         FlatList, 
+         Image, ActivityIndicator, 
+         SafeAreaView,
+         RefreshControl } from 'react-native';
+import {Card, CardItem, Body} from 'native-base'
 
 export default class App extends React.Component {
 
@@ -8,14 +14,15 @@ constructor(props) {
   super(props)
   this.state = {
     isLoading: true,
-    dataSource: []
+    dataSource: [],
+    refreshing: false
   }
 }
 
 getNewsFromApi = () => {
   let API_KEY = '8c84a161bad74300b7ea37e0b2315211'
   let country = 'in'
-  const URL = `https://newsapi.org/v2/top-headlines?country=in&apiKey=8c84a161bad74300b7ea37e0b2315211`
+  const URL = `https://newsapi.org/v2/top-headlines?country=in&pageSize=50&apiKey=8c84a161bad74300b7ea37e0b2315211`
   return(
     fetch( URL )
       .then( response => response.json())
@@ -23,18 +30,27 @@ getNewsFromApi = () => {
         console.log(responseJson.articles[0].title)
         this.setState({
           isLoading: false,
-          dataSource: this.state.dataSource.concat(responseJson.articles)
+          dataSource: this.state.dataSource.concat(responseJson.articles),
+          refreshing: false
         })
       })
       .catch(error => console.log(error))
   )
 }
 
+_onRefresh = () => {
+  this.setState({ refreshing: true }, function() { this.getNewsFromApi() });
+}
+
 _keyExtractor = (items, index) => items.title
 
 componentDidMount() {
   this.getNewsFromApi()
-  console.log(this.dataSource)
+  this._onRefresh()
+}
+
+componentWillMount() {
+  this.getNewsFromApi()
 }
   render() {
 
@@ -64,6 +80,12 @@ componentDidMount() {
         
         data = {this.state.dataSource}
         keyExtractor = {this._keyExtractor}
+        refreshControl = {
+          <RefreshControl
+          refreshing = {this.state.refreshing}
+          onRefresh = {this._onRefresh}
+          ></RefreshControl>
+        }
         renderItem = { ({item}) => (
           <Card>
             <CardItem cardBody>
