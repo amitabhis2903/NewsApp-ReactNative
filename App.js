@@ -47,6 +47,7 @@ _keyExtractor = (items, index) => items.title
 componentDidMount() {
   this.getNewsFromApi()
   this._onRefresh()
+  
 }
 
 componentWillMount() {
